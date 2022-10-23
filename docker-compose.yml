@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  
+  express_srvr1:
+     image: express-server:v1
+     container_name: express_instance1
+     restart: on-failure
+     ports:
+       - 1011:1122
+     networks:
+       - my-net
+  
+  express_srvr2:
+     image: express-server:v1 
+     container_name: express_instance2
+     restart: on-failure
+     ports:
+       - 1012:1122
+     networks:
+       - my-net
+  
+  nginx_srvr:
+    image: nginx:stable-alpine
+    container_name: nginx_instance
+    restart: on-failure
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 8080:80
+    depends_on:
+      - express_srvr1
+      - express_srvr2
+    networks:
+     - my-net
+
+networks:
+  my-net:
+    name: my_network
+    driver: bridge
